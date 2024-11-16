@@ -250,6 +250,41 @@
     ("note" . ?n)
     ("idea" . ?i)))
 
+
+(setq org-refile-targets
+'(("Archive.org" :maxlevel . 1)
+    ("Tasks.org" :maxlevel . 1)))
+
+(advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+(setq org-capture-templates
+`(("t" "Tasks / Projects")
+    ("tt" "Task" entry (file+olp "tasks.org" "Inbox")
+	"* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+    ("j" "Journal Entries")
+    ("jj" "Journal" entry
+	(file+olp+datetree "journal.org")
+	"\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+	:clock-in :clock-resume
+	:empty-lines 1)
+    ("jm" "Meeting" entry
+	(file+olp+datetree "journal.org")
+	"* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+	:clock-in :clock-resume
+	:empty-lines 1)
+
+    ("w" "Workflows")
+    ("we" "Checking Email" entry (file+olp+datetree "journal.org")
+	"* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+    ("m" "Metrics Capture")
+    ("mw" "Weight" table-line (file+headline "metrics.org" "Weight")
+    "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+(define-key global-map (kbd "C-c j")
+(lambda () (interactive) (org-capture nil "jj")))
+
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode)
