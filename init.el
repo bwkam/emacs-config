@@ -5,10 +5,6 @@
 (set-fringe-mode 10) ; I don't remember
 (menu-bar-mode -1) ; no menu
 
-(set-face-attribute 'default nil :font "Fira Code" :height 110)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 110 :weight 'regular)
-
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 
@@ -24,6 +20,53 @@
 
 (setq use-package-always-ensure t)
 
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-split-window-below t)
+  (setq evil-vsplit-window-right t)
+
+  :bind (:map evil-normal-state-map
+              ("H" . 'previous-buffer)
+              ("L" . 'next-buffer)
+              ("C-M-h" . 'evil-window-left)
+              ("C-M-l" . 'evil-window-right)
+              ("C-M-k" . 'evil-window-up)
+              ("C-M-j" . 'evil-window-down))
+
+  :config
+  (evil-mode 1)
+
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :custom
+  (evil-collection-want-find-usages-bindings t)
+  (evil-collection-setup-minibuffer t)
+  :config
+  (evil-collection-init))
+
+(use-package evil-nerd-commenter
+  :after evil
+  :bind
+  ([remap comment-line] . #'evilnc-comment-or-uncomment-lines))
+
+(use-package haxe-mode)
+
+(set-face-attribute 'default nil :font "Fira Code" :height 110)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 110 :weight 'regular)
+
 (column-number-mode)
 (global-display-line-numbers-mode t)
 
@@ -31,6 +74,7 @@
 (dolist (mode '(org-mode-hook
               term-mode-hook
               eshell-mode-hook
+              treemacs-mode-hook
               shell-mode-hook))
 (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -90,8 +134,6 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package haxe-mode)
-
 (use-package ligature
   :config
   (ligature-set-ligatures 't '("www"))
@@ -126,37 +168,6 @@
                           "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))
   (global-ligature-mode t))
 
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-split-window-below t)
-  (setq evil-vsplit-window-right t)
-
-  :bind (:map evil-normal-state-map
-              ("H" . 'previous-buffer)
-              ("L" . 'next-buffer)
-              ("C-M-h" . 'evil-window-left)
-              ("C-M-l" . 'evil-window-right)
-              ("C-M-k" . 'evil-window-up)
-              ("C-M-j" . 'evil-window-down))
-
-  :config
-  (evil-mode 1)
-
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-  (evil-set-initial-state 'messages-buffer-mode 'normal))
-
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
-
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
@@ -173,6 +184,49 @@
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(defun bw/lsp-mode-setup ()
+  (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . bw/lsp-mode-setup)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (define-key evil-normal-state-map (kbd "g r") #'lsp-find-references)
+  (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-treemacs
+  :after lsp)
+
+(use-package lsp-ivy)
+
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+         ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+         ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 (defun bw/org-mode-setup ()
     (org-indent-mode)

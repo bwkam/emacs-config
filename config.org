@@ -11,13 +11,6 @@
   (menu-bar-mode -1) ; no menu
 #+end_src
 
-* Set some face attributes
-#+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Fira Code" :height 110)
-  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
-  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 110 :weight 'regular)
-#+end_src
-
 * Global keybindings
 #+begin_src emacs-lisp
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -39,7 +32,63 @@
   (setq use-package-always-ensure t)
 #+end_src
 
-* Enable some global modes
+* Evil
+#+begin_src emacs-lisp
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-split-window-below t)
+    (setq evil-vsplit-window-right t)
+
+    :bind (:map evil-normal-state-map
+                ("H" . 'previous-buffer)
+                ("L" . 'next-buffer)
+                ("C-M-h" . 'evil-window-left)
+                ("C-M-l" . 'evil-window-right)
+                ("C-M-k" . 'evil-window-up)
+                ("C-M-j" . 'evil-window-down))
+
+    :config
+    (evil-mode 1)
+
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+    (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
+
+    (evil-set-initial-state 'messages-buffer-mode 'normal))
+
+  (use-package evil-collection
+    :after evil
+    :ensure t
+    :custom
+    (evil-collection-want-find-usages-bindings t)
+    (evil-collection-setup-minibuffer t)
+    :config
+    (evil-collection-init))
+
+  (use-package evil-nerd-commenter
+    :after evil
+    :bind
+    ([remap comment-line] . #'evilnc-comment-or-uncomment-lines))
+#+end_src
+
+* Haxe
+#+begin_src emacs-lisp
+  (use-package haxe-mode)
+#+end_src
+* UI
+** Set some face attributes
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil :font "Fira Code" :height 110)
+  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 110 :weight 'regular)
+#+end_src
+
+** Enable some global modes
 #+begin_src emacs-lisp
   (column-number-mode)
   (global-display-line-numbers-mode t)
@@ -48,12 +97,13 @@
   (dolist (mode '(org-mode-hook
                 term-mode-hook
                 eshell-mode-hook
+                treemacs-mode-hook
                 shell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 #+end_src
 
-* Ivy & Counsel config
+** Ivy & Counsel config
 #+begin_src emacs-lisp
   (use-package ivy
     :diminish
@@ -85,12 +135,12 @@
     (setq ivy-initial-inputs-alist nil)) ;; no ^
 #+end_src
 
-* all-the-icons
+** all-the-icons
 #+begin_src emacs-lisp
   (use-package all-the-icons)
 #+end_src
 
-* doom-modeline
+** doom-modeline
 nice looking status bar
 #+begin_src emacs-lisp
   (use-package doom-modeline
@@ -99,14 +149,14 @@ nice looking status bar
     :custom (doom-modeline-height 15))
 #+end_src
 
-* rainbow-delimiters
+** rainbow-delimiters
 you already know why
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
-* which-key
+** which-key
 #+begin_src emacs-lisp
   (use-package which-key
     :init (which-key-mode)
@@ -115,7 +165,7 @@ you already know why
     (setq which-key-idle-delay 0.3))
 #+end_src
 
-*  Helpful
+**  Helpful
 #+begin_src emacs-lisp
   (use-package helpful
     :commands (helpful-callable helpful-variable helpful-command helpful-key)
@@ -129,12 +179,7 @@ you already know why
     ([remap describe-key] . helpful-key))
 #+end_src
 
-* Haxe
-#+begin_src emacs-lisp
-  (use-package haxe-mode)
-#+end_src
-
-* Ligature
+** Ligature
 #+begin_src emacs-lisp
   (use-package ligature
     :config
@@ -171,41 +216,7 @@ you already know why
     (global-ligature-mode t))
 #+end_src
 
-* Evil
-#+begin_src emacs-lisp
-  (use-package evil
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-want-C-u-scroll t)
-    (setq evil-split-window-below t)
-    (setq evil-vsplit-window-right t)
-
-    :bind (:map evil-normal-state-map
-                ("H" . 'previous-buffer)
-                ("L" . 'next-buffer)
-                ("C-M-h" . 'evil-window-left)
-                ("C-M-l" . 'evil-window-right)
-                ("C-M-k" . 'evil-window-up)
-                ("C-M-j" . 'evil-window-down))
-
-    :config
-    (evil-mode 1)
-
-    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-
-    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-  
-    (evil-set-initial-state 'messages-buffer-mode 'normal))
-
-  (use-package evil-collection
-    :after evil
-    :config
-    (evil-collection-init))
-#+end_src
-
-* Projectile
+** Projectile
 #+begin_src emacs-lisp
   (use-package projectile
     :diminish projectile-mode
@@ -221,14 +232,71 @@ you already know why
     :config (counsel-projectile-mode))
 #+end_src
 
-* Magit
+** Magit
 #+begin_src emacs-lisp
   (use-package magit
     :custom
     (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+end_src
+* LSP
+** Language Servers
+*** lsp-mode
+#+begin_src emacs-lisp
+  (defun bw/lsp-mode-setup ()
+    (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
 
-* Org
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :hook (lsp-mode . bw/lsp-mode-setup)
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :config
+    (define-key evil-normal-state-map (kbd "g r") #'lsp-find-references)
+    (lsp-enable-which-key-integration t))
+#+end_src
+*** lsp-ui
+#+begin_src emacs-lisp
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
+#+end_src
+*** lsp-treemacs
+#+begin_src emacs-lisp
+  (use-package lsp-treemacs
+    :after lsp)
+#+end_src
+*** lsp-ivy
+#+begin_src emacs-lisp
+  (use-package lsp-ivy)
+#+end_src
+** Languages
+*** TS
+#+begin_src emacs-lisp
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :hook (typescript-mode . lsp-deferred)
+    :config
+    (setq typescript-indent-level 2))
+#+end_src
+** Company Mode
+#+begin_src emacs-lisp
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+           ("<tab>" . company-complete-selection))
+          (:map lsp-mode-map
+           ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+#+end_src
+* Org mode
 ** Setup functions
 #+begin_src emacs-lisp
 (defun bw/org-mode-setup ()
