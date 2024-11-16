@@ -1,0 +1,1 @@
+/home/bwkam/.emacs.d/init.el
