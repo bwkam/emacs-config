@@ -236,6 +236,20 @@
 	  "~/Documents/dev/org-testing/birthdays.org"))
   (bw/org-font-setup))
 
+(setq org-tag-alist
+'((:startgroup)
+    ; Put mutually exclusive tags here
+    (:endgroup)
+    ("@errand" . ?E)
+    ("@home" . ?H)
+    ("@work" . ?W)
+    ("agenda" . ?a)
+    ("planning" . ?p)
+    ("publish" . ?P)
+    ("batch" . ?b)
+    ("note" . ?n)
+    ("idea" . ?i)))
+
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode)
