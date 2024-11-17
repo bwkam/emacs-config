@@ -75,8 +75,7 @@
               term-mode-hook
               eshell-mode-hook
               treemacs-mode-hook
-              shell-mode-hook
-              vterm-mode-hook))
+              shell-mode-hook))
 (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package ivy
@@ -364,42 +363,4 @@
 (use-package term
   :config
   (setq explicit-shell-file-name "fish")
-  ; (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"
- ))
-
-(use-package eterm-256color
-  :hook (term-mode . eterm-256color-mode))
-
-(use-package vterm
-  :commands vterm
-  :config
-  ;; (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *") 
-  (setq vterm-shell "fish")              
-  (setq vterm-max-scrollback 10000))
-
-(defun efs/configure-eshell ()
-  ;; Save command history when commands are entered
-  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-
-  ;; Truncate buffer for performance
-  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-
-  ;; Bind some useful keys for evil-mode
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
-  (evil-normalize-keymaps)
-
-  (setq eshell-history-size         10000
-        eshell-buffer-maximum-lines 10000
-        eshell-hist-ignoredups t
-        eshell-scroll-to-bottom-on-input t))
-
-(use-package eshell-git-prompt)
-
-(use-package eshell
-  :hook (eshell-first-time-mode . efs/configure-eshell)
-  :config
-
-  (with-eval-after-load 'esh-opt
-    (setq eshell-destroy-buffer-when-process-dies t)
-    (setq eshell-visual-commands '("htop" "zsh" "vim"))))
+  ; (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))

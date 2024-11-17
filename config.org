@@ -98,7 +98,8 @@
                 term-mode-hook
                 eshell-mode-hook
                 treemacs-mode-hook
-                shell-mode-hook))
+                shell-mode-hook
+                vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 #+end_src
@@ -454,4 +455,58 @@ this centers the text by adding padding to the right and left
         (org-babel-tangle))))
 
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'bw/org-babel-tangle-config)))
+#+end_src
+* Terminals
+** term-mode
+#+begin_src emacs-lisp
+    (use-package term
+      :config
+      (setq explicit-shell-file-name "fish")
+      ; (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"
+     ))
+#+end_src
+***  Better color support
+#+begin_src emacs-lisp
+  (use-package eterm-256color
+    :hook (term-mode . eterm-256color-mode))
+#+end_src
+** vterm
+#+begin_src emacs-lisp
+  (use-package vterm
+    :commands vterm
+    :config
+    ;; (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *") 
+    (setq vterm-shell "fish")              
+    (setq vterm-max-scrollback 10000))
+
+#+end_src
+** eshell
+#+begin_src emacs-lisp
+  (defun efs/configure-eshell ()
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+    ;; Bind some useful keys for evil-mode
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+    (evil-normalize-keymaps)
+
+    (setq eshell-history-size         10000
+          eshell-buffer-maximum-lines 10000
+          eshell-hist-ignoredups t
+          eshell-scroll-to-bottom-on-input t))
+
+  (use-package eshell-git-prompt)
+
+  (use-package eshell
+    :hook (eshell-first-time-mode . efs/configure-eshell)
+    :config
+
+    (with-eval-after-load 'esh-opt
+      (setq eshell-destroy-buffer-when-process-dies t)
+      (setq eshell-visual-commands '("htop" "zsh" "vim"))))
+
 #+end_src
