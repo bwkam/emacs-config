@@ -32,6 +32,50 @@
   (setq use-package-always-ensure t)
 #+end_src
 
+* Consult
+I don't know what's that
+#+begin_src emacs-lisp
+    (use-package consult
+      :hook (completion-list-mode . consult-preview-at-point-mode)
+
+      :init
+      (setq register-preview-delay 0.5
+	    register-preview-function #'consult-register-format)
+
+      ;; Optionally tweak the register preview window.
+      ;; This adds thin lines, sorting and hides the mode line of the window.
+      (advice-add #'register-preview :override #'consult-register-window)
+
+      ;; Use Consult to select xref locations with preview
+      (setq xref-show-xrefs-function #'consult-xref
+	    xref-show-definitions-function #'consult-xref)
+
+      ;; Configure other variables and modes in the :config section,
+      ;; after lazily loading the package.
+      :config
+
+      ;; Optionally configure preview. The default value
+      ;; is 'any, such that any key triggers the preview.
+      (setq consult-preview-key 'any)
+      ;; (setq consult-preview-key "M-.")
+      ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+      ;; For some commands and buffer sources it is useful to configure the
+      ;; :preview-key on a per-command basis using the `consult-customize' macro.
+      (consult-customize
+       consult-ripgrep consult-git-grep consult-grep
+       consult-bookmark consult-recent-file consult-xref
+       consult--source-bookmark consult--source-file-register
+       consult--source-recent-file consult--source-project-recent-file
+
+      ;; Optionally configure the narrowing key.
+      ;; Both < and C-+ work reasonably well.
+      (setq consult-narrow-key "<") ;; "C-+"
+
+      ;; Optionally make narrowing help available in the minibuffer.
+      ;; You may want to use `embark-prefix-help-command' or which-key instead.
+      ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
+    ))
+#+end_src
 * Evil
 #+begin_src emacs-lisp
   (use-package evil
@@ -41,6 +85,7 @@
     (setq evil-want-C-u-scroll t)
     (setq evil-split-window-below t)
     (setq evil-vsplit-window-right t)
+    (setq evil-undo-system 'undo-redo)
 
     :bind (:map evil-normal-state-map
                 ("H" . 'previous-buffer)
@@ -83,11 +128,16 @@
 * UI
 ** Set some face attributes
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Fira Code" :height 110)
-  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
-  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 110 :weight 'regular)
+  (set-face-attribute 'default nil :font "Fira Code" :height 105)
+  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 105)
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 105 :weight 'regular)
 #+end_src
-
+** Themes
+#+begin_src emacs-lisp
+  (use-package doom-themes
+    :init
+    (load-theme 'doom-plain t))
+#+end_src
 ** Enable some global modes
 #+begin_src emacs-lisp
   (column-number-mode)
@@ -245,6 +295,8 @@ you already know why
 #+begin_src emacs-lisp
   (defun bw/lsp-mode-setup ()
     (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))
+    (setq lsp-completion-enable-additional-text-edit nil)
+
     (lsp-headerline-breadcrumb-mode))
 
   (use-package lsp-mode
@@ -273,13 +325,44 @@ you already know why
   (use-package lsp-ivy)
 #+end_src
 ** Languages
-*** TS
+*** TS 
 #+begin_src emacs-lisp
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :hook (typescript-mode . lsp-deferred)
     :config
     (setq typescript-indent-level 2))
+#+end_src
+*** Haskell
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :hook ((haskell-mode . lsp-deferred))
+    :commands (lsp lsp-deferred))
+
+  (use-package lsp-haskell
+    :custom
+    (lsp-haskell-server-path "haskell-language-server-wrapper"))
+#+end_src
+*** direnv
+#+begin_src emacs-lisp
+  (use-package envrc
+    :hook (after-init . envrc-global-mode))
+#+end_src
+*** Nix
+#+begin_src emacs-lisp
+  (use-package lsp-nix
+    :ensure lsp-mode
+    :after (lsp-mode)
+    :demand t
+    :custom
+    (lsp-nix-nil-formatter ["alejandra"])
+    (lsp-nix-nil-auto-eval-inputs nil))
+
+  (use-package nix-mode
+    :hook (nix-mode . lsp-deferred)
+    :ensure t)
+  
 #+end_src
 ** Company Mode
 #+begin_src emacs-lisp
@@ -459,11 +542,10 @@ this centers the text by adding padding to the right and left
 * Terminals
 ** term-mode
 #+begin_src emacs-lisp
-    (use-package term
-      :config
-      (setq explicit-shell-file-name "fish")
-      ; (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"
-     ))
+  (use-package term
+    :config
+    (setq explicit-shell-file-name "fish"))
+    ; (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
 #+end_src
 ***  Better color support
 #+begin_src emacs-lisp
