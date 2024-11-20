@@ -6,7 +6,7 @@
 (menu-bar-mode -1) ; no menu
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-(global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
+; (global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -102,8 +102,6 @@
   :after evil
   :bind
   ([remap comment-line] . #'evilnc-comment-or-uncomment-lines))
-
-(use-package haxe-mode)
 
 (set-face-attribute 'default nil :font "Fira Code" :height 105)
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 105)
@@ -232,11 +230,16 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-(defun bw/lsp-mode-setup ()
-  (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))
-  (setq lsp-completion-enable-additional-text-edit nil)
+(use-package treemacs
+  :defer t)
 
-  (lsp-headerline-breadcrumb-mode))
+(use-package treemacs-projectile
+  :after treemacs)
+
+(defun bw/lsp-mode-setup ()
+  ;; (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))
+  ;; (lsp-headerline-breadcrumb-mode)
+  (lsp-headerline-breadcrumb-mode -1))
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
@@ -287,6 +290,10 @@
   :hook (nix-mode . lsp-deferred)
   :ensure t)
 
+(use-package haxe-mode
+  :mode "\\.hx\\'"
+  :hook (haxe-mode . lsp-deferred))
+
 (use-package company
   :after lsp-mode
   :hook (lsp-mode . company-mode)
@@ -328,29 +335,30 @@
 (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-block-end-line nil :background "transparent"))
 
 (use-package org
   :hook (org-mode . bw/org-mode-setup)
   :config
   (setq org-ellipsis " ▾"
-        org-hide-emphasis-markers t)
+	org-hide-emphasis-markers t)
 
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
+	'((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
 
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-graph-column 60)
 
   (setq org-agenda-files
-        '("~/Documents/dev/org-testing/tasks.org"
-          "~/Documents/dev/org-testing/birthdays.org"
-          "~/Documents/dev/org-testing/habits.org"))
+	'("~/Documents/dev/org-testing/tasks.org"
+	  "~/Documents/dev/org-testing/birthdays.org"
+	  "~/Documents/dev/org-testing/habits.org"))
   (bw/org-font-setup))
 
 (setq org-tag-alist

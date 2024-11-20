@@ -10,13 +10,11 @@
   (set-fringe-mode 10) ; I don't remember
   (menu-bar-mode -1) ; no menu
 #+end_src
-
 * Global keybindings
 #+begin_src emacs-lisp
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-  (global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
+  ; (global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 #+end_src
-
 * Configure use-package
 #+begin_src emacs-lisp
   (require 'package)
@@ -31,7 +29,6 @@
 
   (setq use-package-always-ensure t)
 #+end_src
-
 * Consult
 I don't know what's that
 #+begin_src emacs-lisp
@@ -76,6 +73,7 @@ I don't know what's that
       ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
     ))
 #+end_src
+
 * Evil
 #+begin_src emacs-lisp
   (use-package evil
@@ -121,10 +119,6 @@ I don't know what's that
     ([remap comment-line] . #'evilnc-comment-or-uncomment-lines))
 #+end_src
 
-* Haxe
-#+begin_src emacs-lisp
-  (use-package haxe-mode)
-#+end_src
 * UI
 ** Set some face attributes
 #+begin_src emacs-lisp
@@ -289,15 +283,22 @@ you already know why
     :custom
     (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+end_src
+** Treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :defer t)
+
+  (use-package treemacs-projectile
+    :after treemacs)
+#+end_src
 * LSP
 ** Language Servers
 *** lsp-mode
 #+begin_src emacs-lisp
   (defun bw/lsp-mode-setup ()
-    (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))
-    (setq lsp-completion-enable-additional-text-edit nil)
-
-    (lsp-headerline-breadcrumb-mode))
+    ;; (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))
+    ;; (lsp-headerline-breadcrumb-mode)
+    (lsp-headerline-breadcrumb-mode -1))
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
@@ -364,6 +365,12 @@ you already know why
     :ensure t)
   
 #+end_src
+*** Haxe
+#+begin_src emacs-lisp
+  (use-package haxe-mode
+    :mode "\\.hx\\'"
+    :hook (haxe-mode . lsp-deferred))
+#+end_src
 ** Company Mode
 #+begin_src emacs-lisp
   (use-package company
@@ -414,7 +421,8 @@ you already know why
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-block-end-line nil :background "transparent"))
 #+end_src
 ** Main setup function
 #+begin_src emacs-lisp
@@ -422,23 +430,23 @@ you already know why
     :hook (org-mode . bw/org-mode-setup)
     :config
     (setq org-ellipsis " ▾"
-          org-hide-emphasis-markers t)
+	  org-hide-emphasis-markers t)
 
     (setq org-agenda-start-with-log-mode t)
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
 
     (setq org-todo-keywords
-          '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
+	  '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
 
     (require 'org-habit)
     (add-to-list 'org-modules 'org-habit)
     (setq org-habit-graph-column 60)
 
     (setq org-agenda-files
-          '("~/Documents/dev/org-testing/tasks.org"
-            "~/Documents/dev/org-testing/birthdays.org"
-            "~/Documents/dev/org-testing/habits.org"))
+	  '("~/Documents/dev/org-testing/tasks.org"
+	    "~/Documents/dev/org-testing/birthdays.org"
+	    "~/Documents/dev/org-testing/habits.org"))
     (bw/org-font-setup))
 #+end_src
 ** Set common tags
