@@ -241,6 +241,7 @@
   ;; (lsp-headerline-breadcrumb-mode)
   (lsp-headerline-breadcrumb-mode -1))
 
+
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :hook (lsp-mode . bw/lsp-mode-setup)
@@ -248,7 +249,9 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (define-key evil-normal-state-map (kbd "g r") #'lsp-find-references)
-  (lsp-enable-which-key-integration t))
+  (lsp-enable-which-key-integration t)
+  :custom
+  (lsp-headerline-breadcrumb-enable nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -342,23 +345,21 @@
   :hook (org-mode . bw/org-mode-setup)
   :config
   (setq org-ellipsis " ▾"
-	org-hide-emphasis-markers t)
+        org-hide-emphasis-markers t)
 
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
 
   (setq org-todo-keywords
-	'((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
 
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-graph-column 60)
 
   (setq org-agenda-files
-	'("~/Documents/dev/org-testing/tasks.org"
-	  "~/Documents/dev/org-testing/birthdays.org"
-	  "~/Documents/dev/org-testing/habits.org"))
+        '("~/Documents/org/tasks.org"))
   (bw/org-font-setup))
 
 (setq org-tag-alist
