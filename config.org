@@ -102,6 +102,15 @@ I don't know what's that
   (keymap-set evil-motion-state-map "SPC" 'leader-map)
   (keymap-set evil-normal-state-map "SPC" 'leader-map)
 
+  (evil-define-key 'normal 'global
+    (kbd "C-M-h") 'windmove-left
+    (kbd "C-M-l") 'windmove-right
+    (kbd "C-M-j") 'windmove-down
+    (kbd "C-M-k") 'windmove-up
+
+    "H" 'previous-buffer
+    "L" 'next-buffer)
+
   (evil-define-key nil leader-map
     ;; PROJECT (p)
     "pf" 'projectile-find-file
