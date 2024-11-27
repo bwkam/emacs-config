@@ -70,14 +70,6 @@
   (setq evil-vsplit-window-right t)
   (setq evil-undo-system 'undo-redo)
 
-  :bind (:map evil-normal-state-map
-              ("H" . 'previous-buffer)
-              ("L" . 'next-buffer)
-              ("C-M-h" . 'evil-window-left)
-              ("C-M-l" . 'evil-window-right)
-              ("C-M-k" . 'evil-window-up)
-              ("C-M-j" . 'evil-window-down))
-
   :config
   (evil-mode 1)
 
@@ -88,6 +80,23 @@
   (evil-define-key '(normal visual) 'global "gc" #'evilnc-comment-operator)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal))
+
+(define-prefix-command 'leader-map)
+
+(keymap-set evil-motion-state-map "SPC" 'leader-map)
+(keymap-set evil-normal-state-map "SPC" 'leader-map)
+
+(evil-define-key nil leader-map
+  ;; PROJECT (p)
+  "pf" 'projectile-find-file
+  "ps" 'projectile-shell-command
+  "pp" 'projectile-switch-project
+
+  ;; Search (s)
+  "sb" 'swiper
+  "sB" 'swiper-all
+  "sd" 'counsel-rg
+  "sf" 'locate)
 
 (use-package evil-collection
   :after evil
@@ -256,7 +265,8 @@
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :custom
-  (lsp-ui-doc-position 'bottom))
+  (lsp-ui-doc-position 'bottom)
+  (lsp-ui-sideline-show-diagnostics t))
 
 (use-package lsp-treemacs
   :after lsp)
@@ -296,6 +306,11 @@
 (use-package haxe-mode
   :mode "\\.hx\\'"
   :hook (haxe-mode . lsp-deferred))
+
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 (use-package company
   :after lsp-mode
