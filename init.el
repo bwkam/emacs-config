@@ -25,7 +25,7 @@
 
   :init
   (setq register-preview-delay 0.5
-	register-preview-function #'consult-register-format)
+        register-preview-function #'consult-register-format)
 
   ;; Optionally tweak the register preview window.
   ;; This adds thin lines, sorting and hides the mode line of the window.
@@ -33,7 +33,7 @@
 
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
-	xref-show-definitions-function #'consult-xref)
+        xref-show-definitions-function #'consult-xref)
 
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
@@ -93,7 +93,10 @@
   (kbd "C-M-k") 'windmove-up
 
   "H" 'previous-buffer
-  "L" 'next-buffer)
+  "L" 'next-buffer
+
+  "[g" 'flycheck-previous-error
+  "]g" 'flycheck-next-error)
 
 (evil-define-key nil leader-map
   ;; PROJECT (p)
@@ -171,6 +174,9 @@
   (setq ivy-initial-inputs-alist nil)) ;; no ^
 
 (use-package all-the-icons)
+
+(use-package nerd-icons)
+(add-to-list 'nerd-icons-extension-icon-alist '("hx" nerd-icons-sucicon "nf-seti-haxe" :face nerd-icons-orange))
 
 (use-package doom-modeline
   :ensure t
@@ -295,7 +301,7 @@
 
 (use-package lsp-haskell
   :custom
-  (lsp-haskell-server-path "haskell-language-server-wrapper"))
+  (lsp-haskell-server-path "~/.local/bin/haskell-language-server"))
 
 (use-package envrc
   :hook (after-init . envrc-global-mode))
@@ -314,7 +320,9 @@
 
 (use-package haxe-mode
   :mode "\\.hx\\'"
-  :hook (haxe-mode . lsp-deferred))
+  :hook (haxe-mode . (lambda ()
+                       (lsp-deferred)
+                       (haxe-format-on-save-mode))))
 
 (use-package flycheck
   :ensure t
@@ -507,3 +515,9 @@
   (with-eval-after-load 'esh-opt
     (setq eshell-destroy-buffer-when-process-dies t)
     (setq eshell-visual-commands '("htop" "zsh" "vim"))))
+
+(use-package reformatter
+  :config
+  (reformatter-define haxe-format
+    :program "haxelib"
+    :args '("run" "formatter" "--source" "./" "--stdin")))

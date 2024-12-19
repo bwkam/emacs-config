@@ -32,46 +32,46 @@
 * Consult
 I don't know what's that
 #+begin_src emacs-lisp
-    (use-package consult
-      :hook (completion-list-mode . consult-preview-at-point-mode)
+  (use-package consult
+    :hook (completion-list-mode . consult-preview-at-point-mode)
 
-      :init
-      (setq register-preview-delay 0.5
-	    register-preview-function #'consult-register-format)
+    :init
+    (setq register-preview-delay 0.5
+          register-preview-function #'consult-register-format)
 
-      ;; Optionally tweak the register preview window.
-      ;; This adds thin lines, sorting and hides the mode line of the window.
-      (advice-add #'register-preview :override #'consult-register-window)
+    ;; Optionally tweak the register preview window.
+    ;; This adds thin lines, sorting and hides the mode line of the window.
+    (advice-add #'register-preview :override #'consult-register-window)
 
-      ;; Use Consult to select xref locations with preview
-      (setq xref-show-xrefs-function #'consult-xref
-	    xref-show-definitions-function #'consult-xref)
+    ;; Use Consult to select xref locations with preview
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
 
-      ;; Configure other variables and modes in the :config section,
-      ;; after lazily loading the package.
-      :config
+    ;; Configure other variables and modes in the :config section,
+    ;; after lazily loading the package.
+    :config
 
-      ;; Optionally configure preview. The default value
-      ;; is 'any, such that any key triggers the preview.
-      (setq consult-preview-key 'any)
-      ;; (setq consult-preview-key "M-.")
-      ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
-      ;; For some commands and buffer sources it is useful to configure the
-      ;; :preview-key on a per-command basis using the `consult-customize' macro.
-      (consult-customize
-       consult-ripgrep consult-git-grep consult-grep
-       consult-bookmark consult-recent-file consult-xref
-       consult--source-bookmark consult--source-file-register
-       consult--source-recent-file consult--source-project-recent-file
+    ;; Optionally configure preview. The default value
+    ;; is 'any, such that any key triggers the preview.
+    (setq consult-preview-key 'any)
+    ;; (setq consult-preview-key "M-.")
+    ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+    ;; For some commands and buffer sources it is useful to configure the
+    ;; :preview-key on a per-command basis using the `consult-customize' macro.
+    (consult-customize
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-file-register
+     consult--source-recent-file consult--source-project-recent-file
 
-      ;; Optionally configure the narrowing key.
-      ;; Both < and C-+ work reasonably well.
-      (setq consult-narrow-key "<") ;; "C-+"
+    ;; Optionally configure the narrowing key.
+    ;; Both < and C-+ work reasonably well.
+    (setq consult-narrow-key "<") ;; "C-+"
 
-      ;; Optionally make narrowing help available in the minibuffer.
-      ;; You may want to use `embark-prefix-help-command' or which-key instead.
-      ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
-    ))
+    ;; Optionally make narrowing help available in the minibuffer.
+    ;; You may want to use `embark-prefix-help-command' or which-key instead.
+    ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
+  ))
 #+end_src
 
 * Evil
@@ -109,7 +109,10 @@ I don't know what's that
     (kbd "C-M-k") 'windmove-up
 
     "H" 'previous-buffer
-    "L" 'next-buffer)
+    "L" 'next-buffer
+
+    "[g" 'flycheck-previous-error
+    "]g" 'flycheck-next-error)
 
   (evil-define-key nil leader-map
     ;; PROJECT (p)
@@ -205,6 +208,13 @@ I don't know what's that
 ** all-the-icons
 #+begin_src emacs-lisp
   (use-package all-the-icons)
+#+end_src
+
+** nerd-icons
+#+begin_src emacs-lisp
+  (use-package nerd-icons)
+  (add-to-list 'nerd-icons-extension-icon-alist '("hx" nerd-icons-sucicon "nf-seti-haxe" :face nerd-icons-orange))
+
 #+end_src
 
 ** doom-modeline
@@ -369,7 +379,7 @@ you already know why
 
   (use-package lsp-haskell
     :custom
-    (lsp-haskell-server-path "haskell-language-server-wrapper"))
+    (lsp-haskell-server-path "~/.local/bin/haskell-language-server"))
 #+end_src
 *** direnv
 #+begin_src emacs-lisp
@@ -395,7 +405,10 @@ you already know why
 #+begin_src emacs-lisp
   (use-package haxe-mode
     :mode "\\.hx\\'"
-    :hook (haxe-mode . lsp-deferred))
+    :hook (haxe-mode . (lambda ()
+                         (lsp-deferred)
+                         (haxe-format-on-save-mode))))
+
 #+end_src
 ** Flycheck
 #+begin_src emacs-lisp
@@ -630,4 +643,12 @@ this centers the text by adding padding to the right and left
       (setq eshell-destroy-buffer-when-process-dies t)
       (setq eshell-visual-commands '("htop" "zsh" "vim"))))
 
+#+end_src
+*  Formatter
+#+begin_src emacs-lisp
+  (use-package reformatter
+    :config
+    (reformatter-define haxe-format
+      :program "haxelib"
+      :args '("run" "formatter" "--source" "./" "--stdin")))
 #+end_src
