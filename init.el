@@ -4,6 +4,7 @@
 (tooltip-mode -1) ; no tooltip
 (set-fringe-mode 10) ; I don't remember
 (menu-bar-mode -1) ; no menu
+(add-hook 'compilation-finish-functions 'switch-to-buffer-other-window 'compilation) ;; auto focus *compilation*
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 ; (global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
