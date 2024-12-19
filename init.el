@@ -255,10 +255,13 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package treemacs
-  :defer t)
+  :defer t
+  :custom
+  (treemacs-project-follow-mode t))
 
 (use-package treemacs-projectile
-  :after treemacs)
+  :after (treemacs projectile)
+  :ensure t)
 
 (defun bw/lsp-mode-setup ()
   ;; (setq lsp-headerline-breadcumbs-segments '(path-up-to-project file symbols))

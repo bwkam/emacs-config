@@ -318,10 +318,13 @@ you already know why
 ** Treemacs
 #+begin_src emacs-lisp
   (use-package treemacs
-    :defer t)
+    :defer t
+    :custom
+    (treemacs-project-follow-mode t))
 
   (use-package treemacs-projectile
-    :after treemacs)
+    :after (treemacs projectile)
+    :ensure t)
 #+end_src
 * LSP
 ** Language Servers
