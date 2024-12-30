@@ -100,6 +100,7 @@
   "]g" 'flycheck-next-error)
 
 (evil-define-key nil leader-map
+  "e"  'treemacs
   ;; PROJECT (p)
   "pf" 'projectile-find-file
   "ps" 'projectile-shell-command
@@ -125,9 +126,9 @@
   :bind
   ([remap comment-line] . #'evilnc-comment-or-uncomment-lines))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 105)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 105)
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 105 :weight 'regular)
+(set-face-attribute 'default nil :font "Fira Code" :height 90)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 90)
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 90 :weight 'regular)
 
 (use-package doom-themes
   :init
@@ -258,10 +259,19 @@
 (use-package treemacs
   :defer t
   :custom
-  (treemacs-project-follow-mode t))
+  (treemacs-project-follow-mode t)
+  (treemacs-hide-gitignored-files-mode t))
 
 (use-package treemacs-projectile
   :after (treemacs projectile)
+  :ensure t)
+
+;; (use-package treemacs-evil
+;;   :after (treemacs evil)
+;;   :ensure t)
+
+(use-package treemacs-magit
+  :after (treemacs magit)
   :ensure t)
 
 (defun bw/lsp-mode-setup ()
