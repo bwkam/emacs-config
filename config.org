@@ -157,7 +157,7 @@ I don't know what's that
 #+begin_src emacs-lisp
   (use-package doom-themes
     :init
-    (load-theme 'doom-plain t))
+   (load-theme 'doom-plain-dark t))
 #+end_src
 ** Enable some global modes
 #+begin_src emacs-lisp

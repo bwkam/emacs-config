@@ -132,7 +132,7 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-plain t))
+ (load-theme 'doom-plain-dark t))
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
