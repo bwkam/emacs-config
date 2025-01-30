@@ -128,7 +128,6 @@
      )
 
     ;; Optionally configure the narrowing key.
-    ;; Both < and C-+ work reasonably well.
     (setq consult-narrow-key "<") ;; "C-+"
 
     ;; Optionally make narrowing help available in the minibuffer.
@@ -213,13 +212,16 @@
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil :font "Fira Code" :height 90)
   (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 90)
-  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 90 :weight 'regular)
+  (set-face-attribute 'variable-pitch nil :font "ETBembo" :height 90 :weight 'thin)
 #+end_src
 ** Themes
 #+begin_src emacs-lisp
   (use-package doom-themes
     :init
-   (load-theme 'doom-plain-dark t))
+    (load-theme 'doom-plain-dark t)
+    :config
+    ;; (set-face-attribute 'font-lock-comment-face nil :foreground (doom-color 'base6))
+    )
 #+end_src
 ** Enable some global modes
 #+begin_src emacs-lisp
@@ -485,6 +487,11 @@ you already know why
                          (haxe-format-on-save-mode))))
 
 #+end_src
+*** Raku
+#+begin_src emacs-lisp
+  (use-package raku-mode
+    :defer t)
+#+end_src
 ** Flycheck
 #+begin_src emacs-lisp
   (use-package flycheck
@@ -511,40 +518,43 @@ you already know why
 * Org mode
 ** Setup functions
 #+begin_src emacs-lisp
-(defun bw/org-mode-setup ()
+  (defun bw/org-mode-setup ()
     (org-indent-mode)
     (variable-pitch-mode 1)
     (auto-fill-mode 0))
 
-(defun bw/org-font-setup ()
+  (defun bw/org-font-setup ()
     ;; Replace list hyphen with dot
+    (require 'org-indent)
     (font-lock-add-keywords 'org-mode
                             '(("^ *\\([-]\\) "
-                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 #+end_src
 **  Set faces for heading levels
 #+begin_src emacs-lisp
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+    (dolist (face '((org-level-1 . 1.5)
+                    (org-level-2 . 1.3)
+                    (org-level-3 . 1.25)
+                    (org-level-4 . 1.1)
+                    (org-level-5 . 1.0)
+                    (org-level-6 . 1.0)
+                    (org-level-7 . 1.0)
+                    (org-level-8 . 1.0)))
+        (set-face-attribute (car face) nil :font "ETBembo" :weight 'thin :height (cdr face)))
 #+end_src
 ** Change specific faces
 #+begin_src emacs-lisp
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-block-end-line nil :background "transparent"))
-#+end_src
+    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-block-end-line nil :background "transparent" :height 80)
+    (set-face-attribute 'org-block-begin-line nil :inherit 'variable-pitch :background "transparent" :height 80))
+#+End_src
 ** Main setup function
 #+begin_src emacs-lisp
   (use-package org

@@ -117,7 +117,6 @@
    )
 
   ;; Optionally configure the narrowing key.
-  ;; Both < and C-+ work reasonably well.
   (setq consult-narrow-key "<") ;; "C-+"
 
   ;; Optionally make narrowing help available in the minibuffer.
@@ -191,11 +190,14 @@
 
 (set-face-attribute 'default nil :font "Fira Code" :height 90)
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 90)
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 90 :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "ETBembo" :height 90 :weight 'thin)
 
 (use-package doom-themes
   :init
- (load-theme 'doom-plain-dark t))
+  (load-theme 'doom-plain-dark t)
+  :config
+  ;; (set-face-attribute 'font-lock-comment-face nil :foreground (doom-color 'base6))
+  )
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
@@ -401,6 +403,9 @@
                        (lsp-deferred)
                        (haxe-format-on-save-mode))))
 
+(use-package raku-mode
+  :defer t)
+
 (use-package flycheck
   :ensure t
   :config
@@ -421,34 +426,37 @@
   :hook (company-mode . company-box-mode))
 
 (defun bw/org-mode-setup ()
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (auto-fill-mode 0))
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0))
 
 (defun bw/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  ;; Replace list hyphen with dot
+  (require 'org-indent)
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(dolist (face '((org-level-1 . 1.2)
-                (org-level-2 . 1.1)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+(dolist (face '((org-level-1 . 1.5)
+                (org-level-2 . 1.3)
+                (org-level-3 . 1.25)
+                (org-level-4 . 1.1)
+                (org-level-5 . 1.0)
+                (org-level-6 . 1.0)
+                (org-level-7 . 1.0)
+                (org-level-8 . 1.0)))
+    (set-face-attribute (car face) nil :font "ETBembo" :weight 'thin :height (cdr face)))
 
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
 (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
 (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-block-end-line nil :background "transparent"))
+(set-face-attribute 'org-block-end-line nil :background "transparent" :height 80)
+(set-face-attribute 'org-block-begin-line nil :inherit 'variable-pitch :background "transparent" :height 80))
 
 (use-package org
   :hook (org-mode . bw/org-mode-setup)
